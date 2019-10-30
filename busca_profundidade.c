@@ -6,6 +6,7 @@ struct MatrizAdj {
     int type;       // 0 = grafo, 1 = digrafo
     int item[100][100];
     int index[100];
+
 };
 
 int debug = 1;
@@ -40,9 +41,7 @@ int indexOf(int query, struct MatrizAdj m) {
 struct MatrizAdj loadGrafoFromFile(char filename[100]) {
     FILE* f = fopen(filename, "r");
 
-    char line[200];
     int tipo, size;
-    fgets(line, 200, f);
     fscanf(f, "%d", &tipo);
     fscanf(f, "%d", &size);
 
@@ -93,9 +92,24 @@ void print_matriz(struct MatrizAdj m) {
      }
 }
 
+void print_matriz_with_char(struct MatrizAdj m, char offset) {
+    printf("\n    ");
+    for (int i = 0; i < m.size; i++) printf("%c ", m.index[i] + offset);
+    printf("\n    ");
+    for (int i = 0; i < m.size; i++) printf("--");
+    printf("\n");
+    for (int i = 0; i < m.size; i++) {
+        for (int j = 0; j < m.size; j++) {
+            if (j == 0) printf("%c | ", m.index[i] + offset);
+            printf("%d ", m.item[i][j]);
+         }
+         printf("\n");
+     }
+}
+
 void main () {
 
-    struct MatrizAdj m = loadGrafoFromFile("grafo-1.txt");
+    struct MatrizAdj m = loadGrafoFromFile("grafos/grafo-1.txt");
 
     print_matriz(m);
 
