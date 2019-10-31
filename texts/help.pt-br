@@ -1,0 +1,35 @@
+Lista de comandos válidos:
+
+    Os comandos com destaque em uma letra podem ser chamados usando apenas a letra
+    Ex.: /> help
+         /> h
+    são equivalentes.
+
+    [h]elp - lista os comandos válidos para o Euler1736.
+    [l]oad <filename> - carrega um grafo de uma arquivo padronizado chamado <filename>.
+    [s]tatus - exibe um resumo do estado atual do programa.
+    select <id> - seleciona o grafo ativo com base em seu id
+    cat <filename> - imprime o conteúdo de um arquivo
+    adj [<id>] - exibe a matriz de adjacência de um grafo
+        adj - exibe a matriz de adjacência do grafo selecionado
+        adj <id> exibe a matriz de adjacência do grafo <id>
+    debug [on|off] - liga e desliga o debug
+    logfile - exibe o nome do arquivo de logs atual
+
+Funções de busca
+
+    dfs <raiz> [<id>] [--save [<filename>]] - executa uma busca de profundidade (Deep First Search).
+        dfs <raiz> - executa a busca de profundidade no grafo selecionado
+            dfs <raiz> --save - executa a busca no grafo selecionado e salva a tabela em um arquivo "dfs.tbl"
+            dfs <raiz> --save <filename> - executa a busca no grafo selecionado e salva a tabela em um arquivo com nome <filename>
+        dfs <raiz> <id> - executa a busca de profundidade no grafo com id <id>
+            dfs <raiz> <id> --save - executa a busca de profundidade no grafo com id <id> e salva um arquivo "dfs.tbl"
+            dfs <raiz> <id> --save <filename> - executa a busca de profundidade no grafo com id <id> e salva um arquivo <filename>
+
+    bfs <raiz> [<id>] [--save [<filename>]] - executa uma busca em largura (Brother First Search).
+        bfs <raiz> - executa a busca em largura no grafo selecionado
+            bfs <raiz> --save - executa a busca no grafo selecionado e salva a tabela em um arquivo "bfs.tbl"
+            bfs <raiz> --save <filename> - executa a busca no grafo selecionado e salva a tabela em um arquivo com nome <filename>
+        bfs <raiz> <id> - executa a busca em largura no grafo com id <id>
+            bfs <raiz> <id> --save - executa a busca em largura no grafo com id <id> e salva um arquivo "bfs.tbl"
+            bfs <raiz> <id> --save <filename> - executa a busca em largura no grafo com id <id> e salva um arquivo <filename>

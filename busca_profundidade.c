@@ -54,7 +54,7 @@ struct MatrizAdj loadGrafoFromFile(char filename[100]) {
 
     int origin, destiny, peso, indexCounter = 0;
     while (fscanf(f, "%d %d %d", &origin, &destiny, &peso) != EOF) {
-        printf("Lendo aresta (origem %d, destino %d, peso %d)\n", origin, destiny, peso);
+        if (debug) printf("Lendo aresta (origem %d, destino %d, peso %d)\n", origin, destiny, peso);
         int indexOrigin = indexOf(origin, m);
         int indexDestiny = indexOf(destiny, m);
         if (indexOrigin == -1) {
