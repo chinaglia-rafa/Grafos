@@ -9,7 +9,9 @@
 #define COMMAND_SIZE 200
 
 struct Grafo grafos[10];
+//  Total de grafos selecionados
 int loaded_grafos = 0;
+//  Grafo selecionado
 int selected_grafo = 0;
 
 /**
@@ -57,15 +59,20 @@ void show_status() {
                 selected = '*';
             else
                 selected = ' ';
-            printf("%c [%d] %s carregado de \"%s\" (%d vértices)\n", selected, i + 1, type_grafo(grafos[i].type), grafos[i].filename, grafos[i].size);
+            printf("%c [%d] %s carregado de \"%s\" (%d vértices)", selected, i + 1, type_grafo(grafos[i].type), grafos[i].filename, grafos[i].size);
+            if (EDIT_MODE && selected_grafo == i) printf(" <--[EDITANDO]");
+            printf("\n");
         }
 
-        printf("\nUse o comando select <id> para selecionar outro grafo como ativo.");
+        if (!EDIT_MODE) printf("\nUse o comando select <id> para selecionar outro grafo como ativo.");
     }
     if (DEBUG)
         printf("\n\nStatus do DEBUG: on");
     else
         printf("\n\nStatus do DEBUG: off");
+
+        if (KEEP)
+            printf("\n\nMantendo histórico de comandos.");
 
     char *logfile = get_current_logfile();
     printf("\nLog atual é \"%s\"", logfile);
@@ -150,18 +157,85 @@ int main () {
 
     //  MAIN COMMAND LOOP
     while (1) {
-        // clear();
+        if (!KEEP) clear();
         printf("Bem vindo ao Euler1736 %s.\nUse help ou h para ter ajuda.\n", VERSION);
+        if (EDIT_MODE) {
+            printf("Você está no <MODO DE EDICAO>. Para sair, use o comando [q]uit.\n");
+            printf("    Editando [%d] %s carregado de \"%s\" (%d vértices)\n\n", selected_grafo + 1, type_grafo(grafos[selected_grafo].type), grafos[selected_grafo].filename, grafos[selected_grafo].size);
+        }
         printf("\n/> ");
         fgets(command, COMMAND_SIZE, stdin);
 
         token = strtok(command, SEPARATOR);
         purgeBreakLine(token);
+        //  ============ MODO DE EDIÇÃO ============
+        if (EDIT_MODE) {
+            if (strcmp(token, "quit") == 0 || strcmp(token, "q") == 0) {    // EDIT - QUIT
+                EDIT_MODE = 0;
+            } else if (strcmp(token, "status") == 0 || strcmp(token, "s") == 0) {    //  EDIT - STATUS
+                show_status();
+                pause();
+            } else if (strcmp(token, "help") == 0 || strcmp(token, "h") == 0) {     //  EDIT - HELP
+                print_from_file("help-edit", LANG);
+                pause();
+            } else if (strcmp(token, "exit") == 0) {         //  EDIT - EXIT (inválido)
+                printf("Você está no Modo de Edição. Use o comando >> [q]uit <<");
+                pause();
+            } else if (strcmp(token, "type") == 0) {         //  EDIT - TYPE
+                char *opt;
+                opt = strtok(NULL, SEPARATOR);
+                if (opt == NULL) {
+                    printf("tipo de grafo = %s", type_grafo(grafos[selected_grafo].type));
+                } else {
+                    purgeBreakLine(opt);
+                    if (strcmp(opt, "digrafo") == 0) {
+                        grafos[selected_grafo].type = 1;
+                    } else if (strcmp(opt, "grafo") == 0) {
+                        grafos[selected_grafo].type = 0;
+                        convert_to_grafo(grafos + selected_grafo);
+                    }
+                    else {
+                        printf("\n[ERRO]: Tipo deve ser \"digrafo\" ou \"grafo\".");
+                        pause();
+                        continue;
+                    }
+                    char *log_text = (char*)malloc(sizeof(char) * 500);
+                    sprintf(log_text, "<MODO EDIÇÃO> - Tipo de grafo de [%d] alterado para \"%s\"", selected_grafo + 1, opt);
+                    log_to_file(log_text);
+                    free(log_text);
+                    printf("Tipo de grafo alterado para \"%s\"", opt);
+                }
+                pause();
+            }
+
+            continue;
+        }
+
         if (strcmp(token, "help") == 0 || strcmp(token, "h") == 0) {                  //  HELP
             print_from_file("help", LANG);
             pause();
         } else if (strcmp(token, "exit") == 0) {           //  EXIT
             return 1;
+        } else if (strcmp(token, "edit") == 0) {           //  EDIT
+            char *opt;
+            opt = strtok(NULL, SEPARATOR);
+            int id = 0;
+            if (opt != NULL) {
+                purgeBreakLine(opt);
+                id = atoi(opt) - 1;
+            } else {
+                id = selected_grafo;
+            }
+            if (id < 0 || id >= loaded_grafos) {
+                printf("\n[ERRO]: <id> \"%d\" de grafo inválido.", id + 1);
+                pause();
+                continue;
+            }
+            if (id != selected_grafo) printf("Entrando no [Modo de Edição] do %s com ID = %d.\nO %s foi selecionado como principal.\n", type_grafo(grafos[id].type), id + 1, type_grafo(grafos[id].type));
+            else printf("Entrando no [Modo de Edição] do %s com ID = %d.", type_grafo(grafos[id].type), id + 1);
+            selected_grafo = id;
+            pause();
+            EDIT_MODE = 1;
         } else if (strcmp(token, "status") == 0 || strcmp(token, "s") == 0) {         //  STATUS
             show_status();
             pause();
@@ -170,6 +244,10 @@ int main () {
             opt = strtok(NULL, SEPARATOR);
             purgeBreakLine(opt);
             select_grafo(opt);
+            char *log_text = (char*)malloc(sizeof(char) * 500);
+            sprintf(log_text, "%s [%d] selecionado como ativo.", type_grafo(grafos[selected_grafo].type), selected_grafo + 1);
+            log_to_file(log_text);
+            free(log_text);
             pause();
         } else if (strcmp(token, "cat") == 0) {         //  CAT
             char* filename;
@@ -218,6 +296,25 @@ int main () {
                     continue;
                 }
                 printf("Modo debug alterado para \"%s\"", opt);
+            }
+            pause();
+        } else if (strcmp(token, "keep") == 0) {         //  KEEP
+            char *opt;
+            opt = strtok(NULL, SEPARATOR);
+            if (opt == NULL) {
+                printf("keep = ");
+                if (KEEP == 1) printf("on");
+                else printf("off");
+            } else {
+                purgeBreakLine(opt);
+                if (strcmp(opt, "on") == 0) KEEP = 1;
+                else if (strcmp(opt, "off") == 0) KEEP = 0;
+                else {
+                    printf("\n[ERRO]: Keep deve ser \"on\" ou \"off\".");
+                    pause();
+                    continue;
+                }
+                printf("Modo Keep alterado para \"%s\"", opt);
             }
             pause();
         } else if (strcmp(token, "logfile") == 0) {         //  LOGFILE
@@ -327,7 +424,7 @@ int main () {
                 log_to_file(log_text);
                 free(log_text);
             } else {
-                print_tabela_largura_with_char(t, 'q');
+                print_tabela_largura(t);
                 char filename[200];
                 short willSave = 0;
                 if (opt != NULL && strcmp(opt, "--save") == 0) {

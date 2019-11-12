@@ -412,3 +412,11 @@ void save_tabela_larg_to_file(struct Tabela_largura t, char* filename, char* ori
 
     fclose(f);
 }
+
+void convert_to_grafo(struct Grafo* m) {
+    for (int i = 0; i < m->size; i++) {
+        for (int j = 0; j < m->size; j++) {
+            if (m->item[i][j] != 0) m->item[j][i] = m->item[i][j];
+         }
+     }
+}

@@ -1,0 +1,19 @@
+Lista de comandos válidos para [EDIÇÃO]:
+
+    Os comandos com destaque em uma letra podem ser chamados usando apenas a letra
+    Ex.: /> help
+         /> h
+    são equivalentes.
+
+    [h]elp - lista os comandos válidos para o [MODO DE EDIÇÃO] do Euler1736
+    [s]tatus - exibe um resumo do estado atual do programa
+
+    type [digrafo|grafo] - edita o tipo de grafo
+    rm [(-v | --vertex) <id_vertice>] [(-e | --edge) <origin_id> <destiny_id>] - remove um vértice ou aresta
+        rm (-v | --vertex) <id_vertice> - remove um vértice com nome <id_vertice>
+        rm (-e | --edge) <origin_id> <destiny_id> - remove uma aresta que sai de <origin_id> e chega em <destiny_id>
+    add [(-v | --vertex) <id_vertice>] [(-e | --edge) <origin_id> <destiny_id> [<peso>]] - cria um novo vértice ou aresta com peso <peso>
+        add (-v | --vertex) <id_vertice> - cria um vértice com nome <id_vertice>
+        add (-e | --edge) <origin_id> <destiny_id> [<peso>] - cria uma aresta que sai de <origin_id> e chega em <destiny_id> e tem peso <peso>
+    [q]uit [--save] - sai do modo de edição e salva se a flag --save estiver presente
+    save <filename> - grava a matrix de adjacência no arquivo <filename>
