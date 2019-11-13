@@ -60,6 +60,7 @@ void show_status() {
             else
                 selected = ' ';
             printf("%c [%d] %s carregado de \"%s\" (%d vértices)", selected, i + 1, type_grafo(grafos[i].type), grafos[i].filename, grafos[i].size);
+            if (grafos[i].edited) printf(" [Alterações não salvas]");
             if (EDIT_MODE && selected_grafo == i) printf(" <--[EDITANDO]");
             printf("\n");
         }
@@ -181,6 +182,148 @@ int main () {
             } else if (strcmp(token, "exit") == 0) {         //  EDIT - EXIT (inválido)
                 printf("Você está no Modo de Edição. Use o comando >> [q]uit <<");
                 pause();
+            } else if (strcmp(token, "rm") == 0) {         //  EDIT - RM
+                char *opt;
+                opt = strtok(NULL, SEPARATOR);
+                purgeBreakLine(opt);
+                if (opt == NULL) {
+                    printf("[ERRO]: O comando rm espera as opções -v, --vertex, -e ou --edge");
+                    pause();
+                    continue;
+                }
+                //  Se a opção escolhida for para remover vértice
+                if (strcmp(opt, "-v") == 0 || strcmp(opt, "--vertex") == 0) {
+                    opt = strtok(NULL, SEPARATOR);
+                    purgeBreakLine(opt);
+                    if (opt == NULL) {
+                        printf("[ERRO]: nenhum vértice informado para remoção.");
+                        pause();
+                        continue;
+                    }
+                    int vertex = atoi(opt);
+                    int index = indexOf(vertex, grafos[selected_grafo]);
+                    if (index == -1) {
+                        printf("[ERRO]: Vértice %d não encontrado.", vertex);
+                        pause();
+                        continue;
+                    }
+                    grafos[selected_grafo].edited = 1;
+                    rm_vertex(index, &grafos[selected_grafo]);
+                    printf("Vértice %d removido.\n", vertex);
+
+                }
+                //  Se a opção escolhida for para remover aresta
+                else if (strcmp(opt, "-e") == 0 || strcmp(opt, "--edge") == 0) {
+                    //  Pegando vértice de origem
+                    opt = strtok(NULL, SEPARATOR);
+                    purgeBreakLine(opt);
+                    if (opt == NULL) {
+                        printf("[ERRO]: nenhum vértice de origem informado para remoção.");
+                        pause();
+                        continue;
+                    }
+                    int vertex_origin = atoi(opt);
+                    int index_origin = indexOf(vertex_origin, grafos[selected_grafo]);
+                    if (index_origin == -1) {
+                        printf("[ERRO]: Vértice de origem %d não encontrado.", vertex_origin);
+                        pause();
+                        continue;
+                    }
+                    //  Pegando vértice de destino
+                    opt = strtok(NULL, SEPARATOR);
+                    purgeBreakLine(opt);
+                    if (opt == NULL) {
+                        printf("[ERRO]: nenhum vértice de destino informado para remoção.");
+                        pause();
+                        continue;
+                    }
+                    int vertex_destiny = atoi(opt);
+                    int index_destiny = indexOf(vertex_destiny, grafos[selected_grafo]);
+                    if (index_destiny == -1) {
+                        printf("[ERRO]: Vértice de destino %d não encontrado.", vertex_destiny);
+                        pause();
+                        continue;
+                    }
+                    if (!rm_edge(index_origin, index_destiny, &grafos[selected_grafo])) {
+                        pause();
+                        continue;
+                    }
+                    grafos[selected_grafo].edited = 1;
+
+                    if (grafos[selected_grafo].type == 0)
+                        printf("Aresta %d -- %d removida.\n", vertex_origin, vertex_destiny);
+                    else
+                        printf("Aresta %d -> %d removida.\n", vertex_origin, vertex_destiny);
+                }
+                pause();
+            } else if (strcmp(token, "add") == 0) {         //  EDIT - ADD
+                char *opt;
+                opt = strtok(NULL, SEPARATOR);
+                purgeBreakLine(opt);
+                if (opt == NULL) {
+                    printf("[ERRO]: O comando add espera as opções -v, --vertex, -e ou --edge");
+                    pause();
+                    continue;
+                }
+                //  Se a opção escolhida for para adicionar vértice
+                if (strcmp(opt, "-v") == 0 || strcmp(opt, "--vertex") == 0) {
+                    opt = strtok(NULL, SEPARATOR);
+                    purgeBreakLine(opt);
+                    if (opt == NULL) {
+                        printf("[ERRO]: nenhum vértice informado para criação.");
+                        pause();
+                        continue;
+                    }
+                    int vertex = atoi(opt);
+                    grafos[selected_grafo].edited = 1;
+                    add_vertex(vertex, &grafos[selected_grafo]);
+                    printf("Vértice %d adicionado.\n", vertex);
+
+                }
+                //  Se a opção escolhida for para adicionar aresta
+                else if (strcmp(opt, "-e") == 0 || strcmp(opt, "--edge") == 0) {
+                    //  Pegando vértice de origem
+                    opt = strtok(NULL, SEPARATOR);
+                    purgeBreakLine(opt);
+                    if (opt == NULL) {
+                        printf("[ERRO]: nenhum vértice de origem informado para adição.");
+                        pause();
+                        continue;
+                    }
+                    int vertex_origin = atoi(opt);
+                    int index_origin = indexOf(vertex_origin, grafos[selected_grafo]);
+                    if (index_origin == -1) {
+                        printf("[ERRO]: Vértice de origem %d não encontrado.", vertex_origin);
+                        pause();
+                        continue;
+                    }
+                    //  Pegando vértice de destino
+                    opt = strtok(NULL, SEPARATOR);
+                    purgeBreakLine(opt);
+                    if (opt == NULL) {
+                        printf("[ERRO]: nenhum vértice de destino informado para adição.");
+                        pause();
+                        continue;
+                    }
+                    int vertex_destiny = atoi(opt);
+                    int index_destiny = indexOf(vertex_destiny, grafos[selected_grafo]);
+                    if (index_destiny == -1) {
+                        printf("[ERRO]: Vértice de destino %d não encontrado.", vertex_destiny);
+                        pause();
+                        continue;
+                    }
+                    opt = strtok(NULL, SEPARATOR);
+                    purgeBreakLine(opt);
+                    int peso = 1;
+                    if (opt != NULL) peso = atoi(opt);
+
+                    if (!add_edge(index_origin, index_destiny, peso, &grafos[selected_grafo])) {
+                        pause();
+                        continue;
+                    }
+                    grafos[selected_grafo].edited = 1;
+                }
+                pause();
             } else if (strcmp(token, "type") == 0) {         //  EDIT - TYPE
                 char *opt;
                 opt = strtok(NULL, SEPARATOR);
@@ -205,6 +348,10 @@ int main () {
                     free(log_text);
                     printf("Tipo de grafo alterado para \"%s\"", opt);
                 }
+                pause();
+            } else if (strcmp(token, "adj") == 0) {         //  ADJ
+                printf("Gerando matriz de adjacência\n%s \"%s\" (%d vértices). (ID = %d)\n", type_grafo(grafos[selected_grafo].type), grafos[selected_grafo].filename, grafos[selected_grafo].size, selected_grafo + 1);
+                print_matriz(grafos[selected_grafo]);
                 pause();
             }
 

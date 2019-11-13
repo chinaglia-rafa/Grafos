@@ -2,11 +2,14 @@
 
 struct Grafo {
     int size;
-    int type;               // 0 = grafo, 1 = digrafo
+    //  0 = grafo, 1 = digrafo
+    int type;
     int item[100][100];
     int index[100];
     char filename[200];
     short is_from_file;
+    //  indica se o grafo foi editado e não salvo
+    short edited;
 };
 
 enum cor {white = 'b', grey = 'c', black = 'p'};
@@ -57,6 +60,7 @@ struct Grafo make_matriz(int size, int type) {
     struct Grafo m;
     m.size = size;
     m.type = type;
+    m.edited = 0;
     m.filename[0] = '\0';
     m.is_from_file = 0;
     for (int i = 0; i < size; i++) {
@@ -77,6 +81,94 @@ int indexOf(int query, struct Grafo m) {
         if (m.index[i] == query) return i;
 
     return -1;
+}
+
+short rm_edge(int o, int d, struct Grafo* m) {
+    char *log_text = (char*)malloc(sizeof(char) * 500);
+    sprintf(log_text, "Removendo aresta (%d, %d)", indexAt(o, *m), indexAt(d, *m));
+    log_to_file(log_text);
+    free(log_text);
+
+    if (m->item[o][d] == 0) {
+        printf("Aresta (%d, %d) não existe.\n", o, d);
+        return 0;
+    }
+    m->item[o][d] = 0;
+    if (m->type == 0) m->item[d][o] = 0;
+
+    return 1;
+}
+
+short add_vertex(int vertex, struct Grafo* m) {
+    if (m->size == 100) return 0;
+
+    char *log_text = (char*)malloc(sizeof(char) * 500);
+    sprintf(log_text, "Criando vértice %d", vertex);
+    log_to_file(log_text);
+    free(log_text);
+
+    m->index[m->size] = vertex;
+    m->size += 1;
+
+    return 1;
+}
+
+short add_edge(int o, int d, int p, struct Grafo* m) {
+    char *log_text = (char*)malloc(sizeof(char) * 500);
+    sprintf(log_text, "Criando aresta (%d, %d) com peso %d", indexAt(o, *m), indexAt(d, *m), p);
+    log_to_file(log_text);
+
+    if (m->item[o][d] != 0) {
+        sprintf(log_text, "Aresta (%d, %d) já existe com peso %d.\nAtualizando peso para %d.\n", indexAt(o, *m), indexAt(d, *m), m->item[o][d], p);
+        log_to_file(log_text);
+        free(log_text);
+        printf("Aresta (%d, %d) já existe com peso %d.\nAtualizando peso para %d.\n", indexAt(o, *m), indexAt(d, *m), m->item[o][d], p);
+        m->item[o][d] = p;
+        return 1;
+    }
+    m->item[o][d] = p;
+    if (m->type == 0 && m->item[d][o] != 0) {
+        sprintf(log_text, "Aresta (%d, %d) já existe com peso %d.\nAtualizando peso para %d.\n", indexAt(d, *m), indexAt(o, *m), m->item[d][o], p);
+        log_to_file(log_text);
+        free(log_text);
+        printf("Aresta (%d, %d) já existe com peso %d.\nAtualizando peso para %d.\n", indexAt(d, *m), indexAt(o, *m), m->item[d][o], p);
+        m->item[d][o] = p;
+        return 1;
+    }
+    if (m->type == 0) m->item[d][o] = p;
+
+    if (m->type == 0)
+        printf("Aresta %d -- %d criada com peso %d.\n", o, d, p);
+    else
+        printf("Aresta %d -> %d criada com peso %d.\n", o, d, p);
+
+    return 1;
+}
+
+short rm_vertex(int index, struct Grafo* m) {
+    char *log_text = (char*)malloc(sizeof(char) * 500);
+    sprintf(log_text, "Removendo vértice %d", indexAt(index, *m));
+    log_to_file(log_text);
+    free(log_text);
+    //  Removendo linha e subindo elementos abaixo
+    for (int i = index + 1; i < m->size; i++) {
+        for (int j = 0; j < m->size; j++) {
+            m->item[i - 1][j] = m->item[i][j];
+        }
+    }
+    for (int j = 0; j < m->size; j++) m->item[m->size - 1][j] = 0;
+    //  Removendo coluna e arrastando elementos para a esquerda
+    for (int i = index + 1; i < m->size; i++) {
+        for (int j = 0; j < m->size; j++) {
+            m->item[j][i - 1] = m->item[j][i];
+        }
+    }
+    for (int i = 0; i < m->size; i++) m->item[i][m->size - 1] = 0;
+    //  Movendo índices
+    for (int i = index + 1; i < m->size; i++) m->index[i - 1] = m->index[i];
+    m->size -= 1;
+
+    return 1;
 }
 
 struct Grafo load_grafo_from_file(char *filename) {
