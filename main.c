@@ -108,18 +108,17 @@ short load_grafo(char *filename) {
 }
 
 /**
-**  Carrega um grafo de um arquivo enviado por parametro
+**  Exibe um arquivo enviado por parametro
 **/
 short cat_file(char *filename) {
     if (filename == NULL) {
         printf("[ERRO]: o nome do arquivo é obrigatório.");
         return 0;
     }
-    char path[200] = "grafos/";
-    strcat(path, filename);
-    FILE* f = fopen(path, "r");
+
+    FILE* f = fopen(filename, "r");
     if (f == NULL) {
-        printf("\n[ERRO]: arquivo /\"%s\" não encontrado ou inacessível.", path);
+        printf("\n[ERRO]: arquivo /\"%s\" não encontrado ou inacessível.", filename);
         FILE* f = fopen(filename, "r");
         if (f != NULL) {
             printf("\n[ERRO]: arquivo encontrado no diretório raiz!\n");
@@ -172,6 +171,12 @@ int main () {
         //  ============ MODO DE EDIÇÃO ============
         if (EDIT_MODE) {
             if (strcmp(token, "quit") == 0 || strcmp(token, "q") == 0) {    // EDIT - QUIT
+                char *opt;
+                opt = strtok(NULL, SEPARATOR);
+                purgeBreakLine(opt);
+                if (opt != NULL && (strcmp(opt, "--save") == 0 || strcmp(opt, "-s") == 0)) {
+                    adj_to_file(grafos[selected_grafo], grafos[selected_grafo].filename);
+                }
                 EDIT_MODE = 0;
             } else if (strcmp(token, "status") == 0 || strcmp(token, "s") == 0) {    //  EDIT - STATUS
                 show_status();
@@ -181,6 +186,21 @@ int main () {
                 pause();
             } else if (strcmp(token, "exit") == 0) {         //  EDIT - EXIT (inválido)
                 printf("Você está no Modo de Edição. Use o comando >> [q]uit <<");
+                pause();
+            } else if (strcmp(token, "saveas") == 0) {         //  EDIT - SAVE AS
+                char *opt;
+                opt = strtok(NULL, SEPARATOR);
+                purgeBreakLine(opt);
+                if (opt == NULL) {
+                    printf("[ERRO]: O comando saveas espera um nome de arquivo <filename>.");
+                    pause();
+                    continue;
+                }
+                char path[400] = "grafos/";
+                strcat(path, opt);
+                adj_to_file(grafos[selected_grafo], path);
+                grafos[selected_grafo].edited = 0;
+                printf("Arquivo %s salvo com sucesso!\n", path);
                 pause();
             } else if (strcmp(token, "rm") == 0) {         //  EDIT - RM
                 char *opt;
@@ -349,7 +369,7 @@ int main () {
                     printf("Tipo de grafo alterado para \"%s\"", opt);
                 }
                 pause();
-            } else if (strcmp(token, "adj") == 0) {         //  ADJ
+            } else if (strcmp(token, "adj") == 0) {         // EDIT - ADJ
                 printf("Gerando matriz de adjacência\n%s \"%s\" (%d vértices). (ID = %d)\n", type_grafo(grafos[selected_grafo].type), grafos[selected_grafo].filename, grafos[selected_grafo].size, selected_grafo + 1);
                 print_matriz(grafos[selected_grafo]);
                 pause();

@@ -16,5 +16,5 @@ Lista de comandos válidos para [EDIÇÃO]:
     add [(-v | --vertex) <id_vertice>] [(-e | --edge) <origin_id> <destiny_id> [<peso>]] - cria um novo vértice ou aresta com peso <peso>
         add (-v | --vertex) <id_vertice> - cria um vértice com nome <id_vertice>
         add (-e | --edge) <origin_id> <destiny_id> [<peso>] - cria uma aresta que sai de <origin_id> e chega em <destiny_id> e tem peso <peso>
-    [q]uit [--save] - sai do modo de edição e salva se a flag --save estiver presente
-    save <filename> - grava a matriz de adjacência no arquivo <filename>
+    [q]uit [-s | --save] - sai do modo de edição e salva se a flag --save ou -v estiver presente
+    saveas <filename> - grava a matriz de adjacência no arquivo <filename>

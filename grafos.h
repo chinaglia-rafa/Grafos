@@ -64,7 +64,7 @@ struct Grafo make_matriz(int size, int type) {
     m.filename[0] = '\0';
     m.is_from_file = 0;
     for (int i = 0; i < size; i++) {
-        m.index[i] = i;
+        m.index[i] = -1;
         for (int j = 0; j < size; j++)
             m.item[i][j] = 0;
     }
@@ -90,7 +90,7 @@ short rm_edge(int o, int d, struct Grafo* m) {
     free(log_text);
 
     if (m->item[o][d] == 0) {
-        printf("Aresta (%d, %d) não existe.\n", o, d);
+        printf("Aresta (%d, %d) não existe.\n", indexAt(o, *m), indexAt(d, *m));
         return 0;
     }
     m->item[o][d] = 0;
@@ -138,9 +138,9 @@ short add_edge(int o, int d, int p, struct Grafo* m) {
     if (m->type == 0) m->item[d][o] = p;
 
     if (m->type == 0)
-        printf("Aresta %d -- %d criada com peso %d.\n", o, d, p);
+        printf("Aresta %d -- %d criada com peso %d.\n", indexAt(o, *m), indexAt(d, *m), p);
     else
-        printf("Aresta %d -> %d criada com peso %d.\n", o, d, p);
+        printf("Aresta %d -> %d criada com peso %d.\n", indexAt(o, *m), indexAt(d, *m), p);
 
     return 1;
 }
@@ -167,6 +167,25 @@ short rm_vertex(int index, struct Grafo* m) {
     //  Movendo índices
     for (int i = index + 1; i < m->size; i++) m->index[i - 1] = m->index[i];
     m->size -= 1;
+
+    return 1;
+}
+
+short adj_to_file(struct Grafo m, char *filename) {
+    FILE* f = fopen(filename, "w");
+    if (f == NULL) {
+        printf("[ERRO]: Arquivo de salvamento de grafo não encontrado!\n");
+        return 0;
+    }
+    fprintf(f, "%d\n", m.type);
+    fprintf(f, "%d\n", m.size);
+    for (int i = 0; i < m.size; i++) {
+        for (int j = 0; j < m.size; j++) {
+            if (m.item[i][j] == 0) continue;
+            fprintf(f, "%d %d %d\n", indexAt(i, m), indexAt(j, m), m.item[i][j]);
+        }
+    }
+    fclose(f);
 
     return 1;
 }
@@ -204,12 +223,14 @@ struct Grafo load_grafo_from_file(char *filename) {
         int indexOrigin = indexOf(origin, m);
         int indexDestiny = indexOf(destiny, m);
         if (indexOrigin == -1) {
-            m.index[indexCounter] = indexOrigin;
+            printf("Novo vértice: %d\n", origin);
+            m.index[indexCounter] = origin;
             indexOrigin = indexCounter;
             indexCounter++;
         }
         if (indexDestiny == -1) {
-            m.index[indexCounter] = indexDestiny;
+            printf("Novo vértice: %d\n", destiny);
+            m.index[indexCounter] = destiny;
             indexDestiny = indexCounter;
             indexCounter++;
         }
@@ -285,7 +306,7 @@ void tbl_prof_visit(struct Tabela_profundidade* t, int i, struct Grafo m) {
     t->linha[i].color = grey;
     dfs_tempo += 1;
     t->linha[i].d = dfs_tempo;
-    if (DEBUG) printf("Visitando vértice %c (%d) no tempo %d\n", indexAt(i, m) + 'q', i, dfs_tempo);
+    if (DEBUG) printf("Visitando vértice %c (%d) no tempo %d\n", indexAt(i, m) + '0', i, dfs_tempo);
     for (int j = 0; j < m.size; j++) {
         if (m.item[i][j] == 0) continue;
         if (t->linha[j].color == white) {
