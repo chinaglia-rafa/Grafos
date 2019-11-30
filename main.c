@@ -157,7 +157,7 @@ int main () {
 
     //  MAIN COMMAND LOOP
     while (1) {
-        if (!KEEP) clear();
+        // if (!KEEP) clear();
         printf("Bem vindo ao Euler1736 %s.\nUse help ou h para ter ajuda.\n", VERSION);
         if (EDIT_MODE) {
             printf("Você está no <MODO DE EDICAO>. Para sair, use o comando [q]uit.\n");
@@ -556,7 +556,7 @@ int main () {
 
             }
             pause();
-        }else if (strcmp(token, "bfs") == 0) {         //  BFS
+        } else if (strcmp(token, "bfs") == 0) {         //  BFS
             char *opt;
             opt = strtok(NULL, SEPARATOR);
             purgeBreakLine(opt);
@@ -623,6 +623,182 @@ int main () {
                 }
 
             }
+            pause();
+        } else if (strcmp(token, "path") == 0) {         //  CAMINHOS - PATH
+            char *raiz;
+            raiz = strtok(NULL, SEPARATOR);
+            purgeBreakLine(raiz);
+            if (raiz == NULL) {
+                char *log_text = (char*)malloc(sizeof(char) * 500);
+                printf("\n[ERRO]: Raiz não informanda.");
+                sprintf(log_text, "[ERRO]: Raiz nao informanda.");
+                log_to_file(log_text);
+                free(log_text);
+                continue;
+            }
+            char *type;
+            type = strtok(NULL, SEPARATOR);
+            purgeBreakLine(type);
+            if (type == NULL) {
+                char *log_text = (char*)malloc(sizeof(char) * 500);
+                printf("\n[ERRO]: Tipo de caminho não informado! Deve ser [d]ijkstra ou [b]ellford.");
+                sprintf(log_text, "[ERRO]: Tipo de caminho nao informado! Deve ser [d]ijkstra ou [b]ellford.");
+                log_to_file(log_text);
+                free(log_text);
+                continue;
+            }
+            if (!(strcmp(type, "d") == 0 || strcmp(type, "dijkstra") == 0 || strcmp(type, "b") == 0 || strcmp(type, "bellford") == 0)) {
+                 char *log_text = (char*)malloc(sizeof(char) * 500);
+                 printf("\n[ERRO]: Tipo de caminho deve ser [d]ijkstra ou [b]ellford.");
+                 sprintf(log_text, "[ERRO]: Tipo de caminho deve ser [d]ijkstra ou [b]ellford.");
+                 log_to_file(log_text);
+                 free(log_text);
+                 continue;
+            }
+            char *opt;
+            opt = strtok(NULL, SEPARATOR);
+            purgeBreakLine(opt);
+            int id = -1;
+            if (opt != NULL && strcmp(opt, "--save") != 0) {
+                purgeBreakLine(opt);
+                id = atoi(opt) - 1;
+            } else {
+                id = selected_grafo;
+            }
+            if (id < 0 || id >= loaded_grafos) {
+                printf("\n[ERRO]: <id> \"%d\" de grafo inválido.", id + 1);
+                pause();
+                continue;
+            }
+
+            if (strcmp(type, "d") == 0 || strcmp(type, "dijkstra") == 0) {  //  PATH - DIJKSTRA
+                struct Tabela_dijkstra t = path_dijkstra(grafos[id], atoi(raiz));
+                if (t.size == -1) {
+                    char *log_text = (char*)malloc(sizeof(char) * 500);
+                    printf("\n[ERRO]: Algo saiu errado ao fazer o caminho por Dijkstra.");
+                    sprintf(log_text, "[ERRO]: Algo saiu errado ao fazer o caminho por Dijkstra.");
+                    log_to_file(log_text);
+                    free(log_text);
+                } else {
+                    print_tabela_dijkstra(t);
+                    char filename[200];
+                    short willSave = 0;
+                    if (opt != NULL && strcmp(opt, "--save") == 0) {
+                        willSave = 1;
+                        opt = strtok(NULL, SEPARATOR);
+                        purgeBreakLine(opt);
+                        if (opt != NULL) {
+                            strcpy(filename, opt);
+                        } else {
+                            strcpy(filename, "dijkstra.tbl");
+                        }
+                    } else {
+                        opt = strtok(NULL, SEPARATOR);
+                        purgeBreakLine(opt);
+                        if (opt != NULL && strcmp(opt, "--save") == 0) {
+                            willSave = 1;
+                            opt = strtok(NULL, SEPARATOR);
+                            purgeBreakLine(opt);
+                            if (opt != NULL)
+                                strcpy(filename, opt);
+                            else
+                                strcpy(filename, "dijkstra.tbl");
+                        } else {
+                            strcpy(filename, "dijkstra.tbl");
+                        }
+                    }
+                    if (willSave) {
+                        save_tabela_dijkstra_to_file(t, filename, grafos[id].filename);
+                    }
+                }
+            } else if (strcmp(type, "b") == 0 || strcmp(type, "bellford") == 0) {  //  PATH - BELLMAN-FORD
+                struct Tabela_bellford t = path_bellford(grafos[id], atoi(raiz));
+                if (t.size == -1) {
+                    char *log_text = (char*)malloc(sizeof(char) * 500);
+                    printf("\n[ERRO]: Algo saiu errado ao fazer o caminho por Bellman-Ford.");
+                    sprintf(log_text, "[ERRO]: Algo saiu errado ao fazer o caminho por Bellman-Ford.");
+                    log_to_file(log_text);
+                    free(log_text);
+                } else if (t.size == -2) {
+                    char *log_text = (char*)malloc(sizeof(char) * 500);
+                    printf("\n[ERRO]: Bellman-Ford retornou FALSO.");
+                    sprintf(log_text, "[ERRO]: Bellman-Ford retornou FALSO.");
+                    log_to_file(log_text);
+                    free(log_text);
+                } else {
+                    print_tabela_bellford(t);
+                    char filename[200];
+                    short willSave = 0;
+                    if (opt != NULL && strcmp(opt, "--save") == 0) {
+                        willSave = 1;
+                        opt = strtok(NULL, SEPARATOR);
+                        purgeBreakLine(opt);
+                        if (opt != NULL) {
+                            strcpy(filename, opt);
+                        } else {
+                            strcpy(filename, "bellford.tbl");
+                        }
+                    } else {
+                        opt = strtok(NULL, SEPARATOR);
+                        purgeBreakLine(opt);
+                        if (opt != NULL && strcmp(opt, "--save") == 0) {
+                            willSave = 1;
+                            opt = strtok(NULL, SEPARATOR);
+                            purgeBreakLine(opt);
+                            if (opt != NULL)
+                                strcpy(filename, opt);
+                            else
+                                strcpy(filename, "bellford.tbl");
+                        } else {
+                            strcpy(filename, "bellford.tbl");
+                        }
+                    }
+                    if (willSave) {
+                        save_tabela_bellford_to_file(t, filename, grafos[id].filename);
+                    }
+                }
+            }
+
+            pause();
+        } else if (strcmp(token, "props") == 0) {         //  PROPS
+            char *opt;
+            opt = strtok(NULL, SEPARATOR);
+            int id = 0;
+            if (opt != NULL) {
+                purgeBreakLine(opt);
+                id = atoi(opt) - 1;
+            } else {
+                id = selected_grafo;
+            }
+            if (id < 0 || id >= loaded_grafos) {
+                printf("\n[ERRO]: <id> \"%d\" de grafo inválido.", id + 1);
+                pause();
+                continue;
+            }
+
+            struct Tabela_largura t = busca_largura(grafos[id], -1);
+            short is_conexo = 1;
+            //  Verifica se o grafo é conexo
+            for (int i = 0; i < t.size; i++) {
+                if (t.linha[i].color != black) {
+                    is_conexo = 0;
+                    break;
+                }
+            }
+            //  Verifica se o grafo é cíclico
+            struct Tabela_kruskal k = kruskal(grafos[id]);
+            printf("\n==== Propriedades de <%d> - \"%s\" =====\n", id + 1, grafos[id].filename);
+            printf("    - Tipo = %s\n", type_grafo(grafos[id].type));
+            if (is_conexo) printf("    - (Di)grafo conexo = Sim\n");
+                else printf("    - (Di)grafo conexo = Não\n");
+
+            if (k.has_ciclo) printf("    - (Di)grafo cíclico = Sim\n");
+                else printf("    - (Di)grafo cíclico = Não\n");
+
+            if (!k.has_ciclo && is_conexo) printf("    - (Di)grafo é árvore = Sim\n");
+                else if (!k.has_ciclo && !is_conexo) printf("    - (Di)grafo é floresta = Sim\n");
+                else printf("    - (Di)grafo é árvore = Não\n");
+
             pause();
         } else {
             printf("Comando \"%s\" não reconhecido.", token);

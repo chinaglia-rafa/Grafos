@@ -13,6 +13,7 @@ Lista de comandos válidos:
     adj [<id>] - exibe a matriz de adjacência de um grafo
         adj - exibe a matriz de adjacência do grafo selecionado
         adj <id> exibe a matriz de adjacência do grafo <id>
+    props [<id>] - exibe as propriedades do grafo selecionado, ou do grafo <id>
     debug [on|off] - liga e desliga o debug
     keep [on|off] - mantem o histórico de execuções em tela
     logfile - exibe o nome do arquivo de logs atual
@@ -20,6 +21,12 @@ Lista de comandos válidos:
 Edição de grafos
 
     edit [<id>] - entra no modo de edição para o grafo selecionado ou com ID = <id>
+
+Caminhos
+
+        path <raiz> [d]ijkstra [<id>] - encontra um caminho mínimo usando Dijkstra para o grafo <id>
+        path <raiz> [b]ellford [<id>] - encontra um caminho mínimo usando Bellman-Ford para o grafo <id>
+        Ambos comandos acima suportam a flag [--save [<filename>]] para salvar o (di)grafo resultante
 
 Funções de busca
 
