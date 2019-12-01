@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 #include "constants.h"
 #include "print_from_file.h"
 #include "grafos.h"
@@ -152,6 +153,9 @@ short select_grafo(char *opt) {
 }
 
 int main () {
+
+    setlocale(LC_ALL,"");
+
     char command[COMMAND_SIZE];
     char *token;
 
