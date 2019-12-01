@@ -280,14 +280,17 @@ struct Grafo load_grafo_from_file(char *filename) {
         int indexOrigin = indexOf(origin, m);
         int indexDestiny = indexOf(destiny, m);
         if (indexOrigin == -1) {
-            printf("Novo vértice: %d\n", origin);
+            if (DEBUG) printf("Novo vértice: %d\n", origin);
+            sprintf(log_text, "Novo vértice: %d", origin);
+            log_to_file(log_text);
             m.index[indexCounter] = origin;
             if (origin > bigger) bigger = origin;
             indexOrigin = indexCounter;
             indexCounter++;
         }
         if (indexDestiny == -1) {
-            printf("Novo vértice: %d\n", destiny);
+            if (DEBUG) printf("Novo vértice: %d\n", destiny);
+            sprintf(log_text, "Novo vértice: %d", destiny);
             m.index[indexCounter] = destiny;
             if (destiny > bigger) bigger = destiny;
             indexDestiny = indexCounter;
@@ -494,19 +497,17 @@ struct Tabela_bellford path_bellford(struct Grafo m, int raiz) {
         }
     }
 
-    for (int c = 0; c < tabela.size; c++) {
-        for (int i = 0; i < tabela.size; i++) {
-            for (int j = 0; j < tabela.size; j++) {
-                if (m.item[i][j] == 0) continue;
-                if (tabela.linha[j].d > tabela.linha[i].d + m.item[i][j]) {
-                    printf("[ERRO]: Ciclo negativo encontrado.");
-                    sprintf(log_text, "[ERRO]: Ciclo negativo encontrado.");
-                    log_to_file(log_text);
-                    //  TODO: VER ISSO
-                    struct Tabela_bellford null_struct;
-                    null_struct.size = -2;
-                    return null_struct;
-                }
+    for (int i = 0; i < tabela.size; i++) {
+        for (int j = 0; j < tabela.size; j++) {
+            if (m.item[i][j] == 0) continue;
+            if (tabela.linha[j].d > tabela.linha[i].d + m.item[i][j]) {
+                printf("[ERRO]: Ciclo negativo encontrado.");
+                sprintf(log_text, "[ERRO]: Ciclo negativo encontrado.");
+                log_to_file(log_text);
+                //  TODO: VER ISSO
+                struct Tabela_bellford null_struct;
+                null_struct.size = -2;
+                return null_struct;
             }
         }
     }
@@ -566,7 +567,7 @@ struct Tabela_dijkstra path_dijkstra(struct Grafo m, int raiz) {
         if (i == index_raiz) tabela.linha[i].d = 0;
     }
 
-    //  Contador responsável por ver quantos elementos ainda estão na pilha
+    //  Contador responsável por ver quantos elementos ainda estão na fila
     int queue_count = tabela.size;
     //  Índice atual
     int current_vertex = -1;

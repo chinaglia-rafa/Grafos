@@ -157,7 +157,7 @@ int main () {
 
     //  MAIN COMMAND LOOP
     while (1) {
-        // if (!KEEP) clear();
+        if (!KEEP) clear();
         printf("Bem vindo ao Euler1736 %s.\nUse help ou h para ter ajuda.\n", VERSION);
         if (EDIT_MODE) {
             printf("Você está no <MODO DE EDICAO>. Para sair, use o comando [q]uit.\n");
