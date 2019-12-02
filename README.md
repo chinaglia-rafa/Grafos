@@ -1,8 +1,10 @@
 # Grafos
 Coleção de algoritmos para manusear grafos em C
 
-# Importante
-Caracteres especiais podem não funcionar corretamente em Sistemas Operacionais Windows.
-
 # Como executar
+
+## Windows
+Compile e execute o arquivo `main_acentos.c` ou execute `main_acentos.exe`
+
+## Demais Sistemas Operacionais
 Compile e execute o arquivo `main.c`
