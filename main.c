@@ -154,7 +154,7 @@ short select_grafo(char *opt) {
 
 int main () {
 
-    setlocale(LC_ALL,"");
+    setlocale(LC_ALL, "");
 
     char command[COMMAND_SIZE];
     char *token;
