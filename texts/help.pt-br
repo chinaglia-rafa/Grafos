@@ -1,34 +1,34 @@
-Lista de comandos válidos:
+Lista de comandos validos:
 
     Os comandos com destaque em uma letra podem ser chamados usando apenas a letra
     Ex.: /> help
          /> h
-    são equivalentes.
+    sao equivalentes.
 
-    [h]elp - lista os comandos válidos para o Euler1736
+    [h]elp - lista os comandos validos para o Euler1736
     [l]oad <filename> - carrega um grafo de uma arquivo padronizado chamado <filename>
     [s]tatus - exibe um resumo do estado atual do programa
     select <id> - seleciona o grafo ativo com base em seu id
     cat <filename> - imprime o conteúdo de um arquivo
-    adj [<id>] - exibe a matriz de adjacência de um grafo
-        adj - exibe a matriz de adjacência do grafo selecionado
-        adj <id> exibe a matriz de adjacência do grafo <id>
+    adj [<id>] - exibe a matriz de adjacencia de um grafo
+        adj - exibe a matriz de adjacencia do grafo selecionado
+        adj <id> exibe a matriz de adjacencia do grafo <id>
     props [<id>] - exibe as propriedades do grafo selecionado, ou do grafo <id>
     debug [on|off] - liga e desliga o debug
-    keep [on|off] - mantem o histórico de execuções em tela
+    keep [on|off] - mantem o historico de execucoes em tela
     logfile - exibe o nome do arquivo de logs atual
 
-Edição de grafos
+Edicao de grafos
 
-    edit [<id>] - entra no modo de edição para o grafo selecionado ou com ID = <id>
+    edit [<id>] - entra no modo de edicao para o grafo selecionado ou com ID = <id>
 
 Caminhos
 
-        path <raiz> [d]ijkstra [<id>] - encontra um caminho mínimo usando Dijkstra para o grafo <id>
-        path <raiz> [b]ellford [<id>] - encontra um caminho mínimo usando Bellman-Ford para o grafo <id>
+        path <raiz> [d]ijkstra [<id>] - encontra um caminho minimo usando Dijkstra para o grafo <id>
+        path <raiz> [b]ellford [<id>] - encontra um caminho minimo usando Bellman-Ford para o grafo <id>
         Ambos comandos acima suportam a flag [--save [<filename>]] para salvar o (di)grafo resultante
 
-Funções de busca
+Funcoes de busca
 
     dfs <raiz> [<id>] [--save [<filename>]] - executa uma busca de profundidade (Depth First Search).
         dfs <raiz> - executa a busca de profundidade no grafo selecionado

@@ -1,20 +1,20 @@
-Lista de comandos válidos para [EDIÇÃO]:
+Lista de comandos validos para [EDICAO]:
 
     Os comandos com destaque em uma letra podem ser chamados usando apenas a letra
     Ex.: /> help
          /> h
-    são equivalentes.
+    sao equivalentes.
 
-    [h]elp - lista os comandos válidos para o [MODO DE EDIÇÃO] do Euler1736
+    [h]elp - lista os comandos validos para o [MODO DE EDICAO] do Euler1736
     [s]tatus - exibe um resumo do estado atual do programa
-    adj - exibe a matriz de adjacência do grafo sendo editado
+    adj - exibe a matriz de adjacencia do grafo sendo editado
 
     type [digrafo|grafo] - edita o tipo de grafo
-    rm [(-v | --vertex) <id_vertice>] [(-e | --edge) <origin_id> <destiny_id>] - remove um vértice ou aresta
-        rm (-v | --vertex) <id_vertice> - remove um vértice com nome <id_vertice>
+    rm [(-v | --vertex) <id_vertice>] [(-e | --edge) <origin_id> <destiny_id>] - remove um vertice ou aresta
+        rm (-v | --vertex) <id_vertice> - remove um vertice com nome <id_vertice>
         rm (-e | --edge) <origin_id> <destiny_id> - remove uma aresta que sai de <origin_id> e chega em <destiny_id>
-    add [(-v | --vertex) <id_vertice>] [(-e | --edge) <origin_id> <destiny_id> [<peso>]] - cria um novo vértice ou aresta com peso <peso>
-        add (-v | --vertex) <id_vertice> - cria um vértice com nome <id_vertice>
+    add [(-v | --vertex) <id_vertice>] [(-e | --edge) <origin_id> <destiny_id> [<peso>]] - cria um novo vertice ou aresta com peso <peso>
+        add (-v | --vertex) <id_vertice> - cria um vertice com nome <id_vertice>
         add (-e | --edge) <origin_id> <destiny_id> [<peso>] - cria uma aresta que sai de <origin_id> e chega em <destiny_id> e tem peso <peso>
-    [q]uit [-s | --save] - sai do modo de edição e salva se a flag --save ou -v estiver presente
-    saveas <filename> - grava a matriz de adjacência no arquivo <filename>
+    [q]uit [-s | --save] - sai do modo de edicao e salva se a flag --save ou -v estiver presente
+    saveas <filename> - grava a matriz de adjacencia no arquivo <filename>
